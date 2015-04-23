@@ -245,12 +245,13 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 			return;
 
 		}
-		
-		if (widthMode != MeasureSpec.UNSPECIFIED && heightMode != MeasureSpec.UNSPECIFIED) {
-			markAdapterDirty = false;
-			markLayoutDirty = false;
-			computeLayout(afterWidth, afterHeight);		
-		}
+
+//		if (widthMode != MeasureSpec.UNSPECIFIED && heightMode != MeasureSpec.UNSPECIFIED) {
+        if (markAdapterDirty || markLayoutDirty) {
+            // markAdapterDirty = false;
+            // markLayoutDirty = false;
+            computeLayout(afterWidth, afterHeight);
+        }
 
 		if (dataSetChanged) {
 			dataSetChanged = false;
@@ -560,6 +561,9 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 		if (viewPortY > mScrollableHeight)
 			viewPortY = mScrollableHeight;
 
+		if (markLayoutDirty) {
+            markLayoutDirty = false;
+        }
 	}
 
 	/**
