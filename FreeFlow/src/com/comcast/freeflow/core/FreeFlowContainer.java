@@ -197,6 +197,13 @@ public class FreeFlowContainer extends AbsLayoutContainer
     private int mAccelerateTime = 0x7d0;
 
     private FreeFlowItem mCurrentSelectItem = null;
+    private SelectionChangeListener mSelectListener;
+    
+    public interface SelectionChangeListener {
+        public abstract void onLostSelection();
+
+        public abstract void onSelectionChange(FreeFlowItem item);
+    }
 
 	public FreeFlowContainer(Context context) {
 		super(context);
@@ -1975,6 +1982,10 @@ public class FreeFlowContainer extends AbsLayoutContainer
 	
 	/******** SUPPORT KEYBOARD EVENT ********/
     static final float MAX_SCROLL_FACTOR = 0.5f;
+    
+    public void setSelectionListener(SelectionChangeListener listener) {
+        this.mSelectListener = listener;
+    }
 
     private void updateStage() {
         if (mLongPressStartTime > 0x0) {
@@ -2084,17 +2095,14 @@ public class FreeFlowContainer extends AbsLayoutContainer
         if (nextItem != null) {
             Rect tmp = new Rect(nextItem.frame);
             tmp.offset(-viewPortX, -viewPortY);
-            mCurrentSelectItem = nextItem;
 
-            if (!isOffScreen(tmp)) {
+            if (isOffScreen(tmp)) {
                 int delta = computeScrollDeltaToGetChildRectOnScreen(direction, tmp);
                 if (direction == View.FOCUS_UP || direction == View.FOCUS_DOWN) {
                     scrollDeltaY = delta;
                 } else {
                     scrollDeltaX = delta;
                 }
-            } else {
-                //TODO: notify select item
             }
         } else {
             if (direction == View.FOCUS_UP) {
@@ -2114,6 +2122,20 @@ public class FreeFlowContainer extends AbsLayoutContainer
 
         if (scrollDeltaX != 0 || scrollDeltaY != 0) {
             moveViewportSmoothBy(scrollDeltaX, scrollDeltaY, false);
+        }
+
+        if (nextItem != null) {
+            for (FreeFlowItem item: frames.values()) {
+                if (item.itemIndex == nextItem.itemIndex
+                        && item.itemSection == nextItem.itemSection) {
+                    mCurrentSelectItem = item;
+                    break;
+                }
+            }
+
+            if (mSelectListener != null) {
+                mSelectListener.onSelectionChange(mCurrentSelectItem);
+            }
         }
 
         return true;
@@ -2255,10 +2277,10 @@ public class FreeFlowContainer extends AbsLayoutContainer
      *         of being on the screen.
      */
     private boolean isWithinDeltaOfScreen(Rect r, int delta) {
-        return (r.bottom + delta) >= getScrollY()
-                && (r.top - delta) <= (getScrollY() + getHeight())
-                || (r.right + delta) >= getScrollX()
-                && (r.left - delta) <= (getScrollX() + getWidth());
+        return (r.bottom + delta) <= getHeight()
+                && (r.top - delta) >= 0
+                && (r.right + delta) <= getWidth()
+                && (r.left - delta) >= 0;
     }
 
 	/******** DEBUGGING HELPERS *******/
