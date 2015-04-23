@@ -79,6 +79,8 @@ public interface FreeFlowLayout {
 	 * @return
 	 */
 	public FreeFlowItem getFreeFlowItemForItem(Object item);
+	
+	public FreeFlowItem getNextFreeFlowItem(FreeFlowItem current, int direction);
 
 	public boolean horizontalScrollEnabled();
 

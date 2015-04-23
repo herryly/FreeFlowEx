@@ -25,6 +25,7 @@ import com.comcast.freeflow.layouts.HLayout.LayoutParams;
 import com.comcast.freeflow.utils.ViewUtils;
 
 import android.graphics.Rect;
+import android.view.View;
 
 public class VLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
@@ -168,6 +169,43 @@ public class VLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 	public FreeFlowItem getFreeFlowItemForItem(Object data) {
 		return proxies.get(data);
 	}
+
+	@Override
+    public FreeFlowItem getNextFreeFlowItem(FreeFlowItem current, int direction) {
+        int sec = 0;
+        int idx = 0;
+        if (current != null) {
+            sec = current.itemSection;
+            idx = current.itemIndex;
+
+            if (direction == View.FOCUS_UP) {
+                idx -= 1;
+                Section s = itemsAdapter.getSection(sec - 1);
+                if (idx < 0 && s != null) {
+                    sec -= 1;
+                    idx = s.getDataCount() - 1;
+                }
+            } else if (direction == View.FOCUS_DOWN) {
+                Section s = itemsAdapter.getSection(sec);
+                idx += 1;
+                if (idx >= s.getDataCount()
+                        && itemsAdapter.getSection(sec + 1) != null) {
+                    sec += 1;
+                    idx = 0;
+                }
+            }
+        }
+
+        FreeFlowItem item = null;
+        for (FreeFlowItem fd : proxies.values()) {
+            if (fd.itemIndex == idx && fd.itemSection == sec) {
+                item = fd;
+                break;
+            }
+        }
+
+        return item;
+    }
 
 	@Override
 	public FreeFlowItem getItemAt(float x, float y) {

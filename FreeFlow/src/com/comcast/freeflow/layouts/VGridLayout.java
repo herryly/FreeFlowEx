@@ -189,6 +189,12 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 		return proxies.get(data);
 	}
 
+	@Override
+    public FreeFlowItem getNextFreeFlowItem(FreeFlowItem current,
+            int direction) {
+        return null;
+    }
+
 	public void setBufferCount(int bufferCount) {
 		this.bufferCount = bufferCount;
 	}
