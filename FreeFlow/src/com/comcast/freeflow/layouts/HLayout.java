@@ -15,29 +15,25 @@
  ******************************************************************************/
 package com.comcast.freeflow.layouts;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import android.graphics.Rect;
 
 import com.comcast.freeflow.core.FreeFlowItem;
 import com.comcast.freeflow.core.Section;
-import com.comcast.freeflow.core.SectionedAdapter;
-import com.comcast.freeflow.layouts.FreeFlowLayout.FreeFlowLayoutParams;
-import com.comcast.freeflow.layouts.VGridLayout.LayoutParams;
 import com.comcast.freeflow.utils.ViewUtils;
-
-import android.graphics.Rect;
-import android.util.Log;
 
 public class HLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
 	private static final String TAG = "HLayout";
-	private int itemWidth = -1;
-	private Map<Object, FreeFlowItem> proxies = new HashMap<Object, FreeFlowItem>();
-	private int headerHeight = -1;
-	private int headerWidth = -1;
+	protected int itemWidth = -1;
+	protected Map<Object, FreeFlowItem> proxies = new LinkedHashMap<Object, FreeFlowItem>();
+	protected int headerHeight = -1;
+	protected int headerWidth = -1;
 
-	private int cellBufferSize = 0;
-	private int bufferCount = 1;
+	protected int cellBufferSize = 0;
+	protected int bufferCount = 1;
 	
 	protected FreeFlowLayoutParams layoutParams;
 	
@@ -122,7 +118,7 @@ public class HLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 	 */
 	@Override
 	public Map<Object, FreeFlowItem> getItemProxies(int viewPortLeft, int viewPortTop) {
-		HashMap<Object, FreeFlowItem> desc = new HashMap<Object, FreeFlowItem>();
+		LinkedHashMap<Object, FreeFlowItem> desc = new LinkedHashMap<Object, FreeFlowItem>();
 
 		for (FreeFlowItem fd : proxies.values()) {
 			if (fd.frame.left + itemWidth > viewPortLeft - cellBufferSize
@@ -151,8 +147,9 @@ public class HLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
 	@Override
 	public int getContentWidth() {
-		if (itemsAdapter == null)
+		if (itemsAdapter == null || itemsAdapter.getNumberOfSections() <= 0){
 			return 0;
+		}
 
 		int sectionIndex = itemsAdapter.getNumberOfSections() - 1;
 		Section s = itemsAdapter.getSection(sectionIndex);

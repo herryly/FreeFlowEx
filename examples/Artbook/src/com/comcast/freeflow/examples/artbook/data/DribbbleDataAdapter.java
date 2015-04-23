@@ -123,9 +123,4 @@ public class DribbbleDataAdapter implements SectionedAdapter {
 		return false;
 	}
 
-	@Override
-	public Object getMappedItemForLayoutChange(Object data) {
-		return null;
-	}
-
 }

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.comcast.freeflow.layouts;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import android.graphics.Rect;
@@ -32,7 +32,7 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 	protected int headerWidth = -1;
 	protected int headerHeight = -1;
 	
-	protected Map<Object, FreeFlowItem> proxies = new HashMap<Object, FreeFlowItem>();
+	protected Map<Object, FreeFlowItem> proxies = new LinkedHashMap<Object, FreeFlowItem>();
 
 	private int cellBufferSize = 0;
 	private int bufferCount = 1;
@@ -132,7 +132,7 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 	 */
 	@Override
 	public Map<Object, FreeFlowItem> getItemProxies(int viewPortLeft, int viewPortTop) {
-		HashMap<Object, FreeFlowItem> desc = new HashMap<Object, FreeFlowItem>();
+		LinkedHashMap<Object, FreeFlowItem> desc = new LinkedHashMap<Object, FreeFlowItem>();
 		for (FreeFlowItem fd : proxies.values()) {
 			if (fd.frame.top + itemHeight > viewPortTop - cellBufferSize
 					&& fd.frame.top < viewPortTop + height + cellBufferSize) {
@@ -166,8 +166,9 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
 	@Override
 	public int getContentHeight() {
-		if (itemsAdapter == null)
+		if (itemsAdapter == null || itemsAdapter.getNumberOfSections() <= 0){
 			return 0;
+		}
 
 		int sectionIndex = itemsAdapter.getNumberOfSections() - 1;
 		Section s = itemsAdapter.getSection(sectionIndex);
@@ -177,7 +178,9 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
 		Object lastFrameData = s.getDataAtIndex(s.getDataCount() - 1);
 		FreeFlowItem fd = proxies.get(lastFrameData);
-
+		if(fd==null){
+			return 0;
+		}
 		return (fd.frame.top + fd.frame.height());
 	}
 
@@ -208,6 +211,10 @@ public class VGridLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 			this.headerHeight = headerHeight;
 		}
 		
+	}
+	
+	public int getItemWidth(){
+		return itemWidth;
 	}
 
 }

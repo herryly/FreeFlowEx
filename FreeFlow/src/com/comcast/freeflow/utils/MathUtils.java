@@ -13,37 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.comcast.freeflow.core;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+package com.comcast.freeflow.utils;
 
-import android.view.View;
+public class MathUtils {
 
-public class ViewPool {
-
-	private LinkedHashMap<Class, ArrayList<View>> viewPool;
-
-	public ViewPool() {
-	}
-
-	public void initializeViewPool(Class[] viewTypes) {
-		viewPool = new LinkedHashMap<Class, ArrayList<View>>();
-		for (int i = 0; i < viewTypes.length; i++) {
-			viewPool.put(viewTypes[i], new ArrayList<View>());
-		}
-	}
-
-	public void returnViewToPool(View view) {
-		if (viewPool.containsKey(view.getClass()))
-			viewPool.get(view.getClass()).add(view);
-	}
-
-	public View getViewFromPool(Class viewType) {
-		if (viewPool.get(viewType) == null || viewPool.get(viewType).size() == 0)
-			return null;
-
-		return viewPool.get(viewType).remove(0);
+	public static int randRange(int min, int max) {
+		return min + (int) (Math.random() * ((max - min) + 1));
 	}
 
 }

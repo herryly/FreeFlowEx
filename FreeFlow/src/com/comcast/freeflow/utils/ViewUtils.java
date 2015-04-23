@@ -15,22 +15,40 @@
  ******************************************************************************/
 package com.comcast.freeflow.utils;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Point;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.Display;
 
 import com.comcast.freeflow.core.FreeFlowItem;
 
 public class ViewUtils {
-	public static FreeFlowItem getItemAt(Map<? extends Object, FreeFlowItem> frameDescriptors, int x, int y){
+	public static FreeFlowItem getItemAt(Map<?, FreeFlowItem> frameDescriptors, int x, int y){
+        FreeFlowItem returnValue = null;
 
-		Iterator<? extends Object> it=  frameDescriptors.entrySet().iterator();
-			
-		while (it.hasNext()) {
-			Entry<Object, FreeFlowItem> pair = (Entry<Object, FreeFlowItem>) it.next();
-			if(pair.getValue().frame.contains((int)x, (int)y)) return pair.getValue();
+		for(FreeFlowItem item : frameDescriptors.values()) {
+			if(item.frame.contains((int)x, (int)y)) {
+                returnValue =  item;
+            }
 	      
 	    }
-		return null;
+		return returnValue;
 	}
+	
+	public static Point getScreenSize(Activity activity){
+		Display display = activity.getWindowManager().getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		return size;
+	}
+	
+	public static float dipToPixels(Context context, float dipValue) {
+	    DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+	    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
+	}
+	
 }
