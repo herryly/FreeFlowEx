@@ -193,4 +193,10 @@ public class ArtbookLayout extends FreeFlowLayoutBase implements FreeFlowLayout 
 	public boolean horizontalScrollEnabled(){
 		return false;
 	}
+
+    @Override
+    public FreeFlowItem getNextFreeFlowItem(FreeFlowItem current, int direction) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
