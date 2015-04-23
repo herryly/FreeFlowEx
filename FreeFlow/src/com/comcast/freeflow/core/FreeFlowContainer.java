@@ -37,6 +37,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -2125,6 +2126,8 @@ public class FreeFlowContainer extends AbsLayoutContainer
         }
 
         if (nextItem != null) {
+            playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
+
             for (FreeFlowItem item: frames.values()) {
                 if (item.itemIndex == nextItem.itemIndex
                         && item.itemSection == nextItem.itemSection) {
