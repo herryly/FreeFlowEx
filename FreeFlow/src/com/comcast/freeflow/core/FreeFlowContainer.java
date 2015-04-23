@@ -48,8 +48,10 @@ import com.comcast.freeflow.animations.DefaultLayoutAnimator;
 import com.comcast.freeflow.animations.FreeFlowLayoutAnimator;
 import com.comcast.freeflow.layouts.FreeFlowLayout;
 import com.comcast.freeflow.utils.ViewUtils;
+import com.comcast.freeflow.utils.KeyPressHelper;
 
-public class FreeFlowContainer extends AbsLayoutContainer {
+public class FreeFlowContainer extends AbsLayoutContainer
+                implements KeyPressHelper.OnKeyPressListener{
 
 	private static final String TAG = "Container";
 
@@ -188,8 +190,11 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 	/**
      * The value used by keyboard response
      */
-    private int SCROLL_DURATION = 0x168;
+    private int SCROLL_DURATION = 0xbe;
     private int mScrollDuration = SCROLL_DURATION;
+    private KeyPressHelper mKeyPressHelper;
+    private long mLongPressStartTime = 0x0;
+    private int mAccelerateTime = 0x7d0;
 
     private FreeFlowItem mCurrentSelectItem = null;
 
@@ -223,6 +228,8 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 
 		setEdgeEffectsEnabled(true);
 
+		mKeyPressHelper = new KeyPressHelper();
+        mKeyPressHelper.setOnKeyPressListener(this);
 	}
 
 	@Override
@@ -1969,6 +1976,35 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 	/******** SUPPORT KEYBOARD EVENT ********/
     static final float MAX_SCROLL_FACTOR = 0.5f;
 
+    private void updateStage() {
+        if (mLongPressStartTime > 0x0) {
+            int stageTime = 0x9;
+            int minTime = 0x1e;
+            long currentTime = System.currentTimeMillis();
+            long stage = (currentTime - mLongPressStartTime)
+                    / (long) mAccelerateTime;
+            mScrollDuration = (int) ((long) mScrollDuration - ((long) stageTime * stage));
+            mScrollDuration = Math.max(minTime, mScrollDuration);
+        }
+    }
+
+    @Override
+    public void onKeyPressed(int keyCode) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onKeyLongPressedStart(int keyCode) {
+        mLongPressStartTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void onKeyLongPressedEnd(int keyCode) {
+        mLongPressStartTime = -0x1;
+        mScrollDuration = SCROLL_DURATION;
+    }
+
     /**
      * @return The maximum amount this scroll view will scroll in response to an
      *         arrow event.
@@ -1987,6 +2023,7 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        mKeyPressHelper.dispatchKeyEvent(event);
         // Let the focused view and/or our descendants get the key first
         return super.dispatchKeyEvent(event) || executeKeyEvent(event);
     }
@@ -2007,6 +2044,7 @@ public class FreeFlowContainer extends AbsLayoutContainer {
 
         boolean handled = false;
 
+        updateStage();
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_DPAD_UP:
