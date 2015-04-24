@@ -2131,21 +2131,43 @@ public class FreeFlowContainer extends AbsLayoutContainer
         if (nextItem != null) {
             playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
 
-            for (FreeFlowItem item: frames.values()) {
-                if (item.itemIndex == nextItem.itemIndex
-                        && item.itemSection == nextItem.itemSection) {
-                    mCurrentSelectItem = item;
-                    break;
-                }
-            }
-
-            if (mSelectListener != null) {
-                mSelectListener.onSelectionChange(mCurrentSelectItem);
-            }
+            mNextItemSection = nextItem.itemSection;
+            mNextItemIndex = nextItem.itemIndex;
+            removeCallbacks(mSelectRunnable);
+            post(mSelectRunnable);
         }
 
         return true;
     }
+
+    private int mNextItemSection = 0;
+    private int mNextItemIndex = 0;
+    private Runnable mSelectRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            FreeFlowItem current = null;
+            for (FreeFlowItem item: frames.values()) {
+                if (item.itemIndex == mNextItemIndex
+                        && item.itemSection == mNextItemSection) {
+                    current = item;
+                    break;
+                }
+            }
+
+            if (current == null) {
+                removeCallbacks(mSelectRunnable);
+                postDelayed(mSelectRunnable, 100);
+            } else {
+                mCurrentSelectItem = current;
+                
+                if (mSelectListener != null) {
+                    mSelectListener.onSelectionChange(mCurrentSelectItem);
+                }
+            }
+        }
+
+    };
 
     /**
      * Compute the amount to scroll in the Y direction in order to get a
