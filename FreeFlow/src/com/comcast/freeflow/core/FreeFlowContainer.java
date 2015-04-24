@@ -1064,7 +1064,7 @@ public class FreeFlowContainer extends AbsLayoutContainer
 
 		if (mTouchMode == TOUCH_MODE_SCROLL) {
 			moveViewportBy(event.getX() - deltaX, event.getY() - deltaY, false);
-			invokeOnItemScrollListeners();
+			invokeOnItemScrollListeners(OnScrollListener.SCROLL_STATE_TOUCH_SCROLL);
 			deltaX = event.getX();
 			deltaY = event.getY();
 		}
@@ -1200,9 +1200,11 @@ public class FreeFlowContainer extends AbsLayoutContainer
 					mOnTouchModeChangedListener.onTouchModeChanged(mTouchMode);
 				}
 
-				invokeOnItemScrollListeners();
+				invokeOnItemScrollListeners(OnScrollListener.SCROLL_STATE_IDLE);
 				return;
 			}
+			
+			invokeOnItemScrollListeners(OnScrollListener.SCROLL_STATE_FLING);
 			boolean more = scroller.computeScrollOffset();
 			if (mEdgeEffectsEnabled) {
 				checkEdgeEffectDuringScroll();
@@ -1929,7 +1931,7 @@ public class FreeFlowContainer extends AbsLayoutContainer
 			post(flingRunnable);
 		} else {
 			moveViewportBy((viewPortX - newVPX), (viewPortY - newVPY), false);
-			invokeOnItemScrollListeners();
+			invokeOnItemScrollListeners(OnScrollListener.SCROLL_STATE_IDLE);
 		}
 	}
 
@@ -1963,9 +1965,9 @@ public class FreeFlowContainer extends AbsLayoutContainer
 		return viewPortY / scrollableHeight;
 	}
 
-	protected void invokeOnItemScrollListeners() {
+	protected void invokeOnItemScrollListeners(int state) {
 		for (OnScrollListener l : scrollListeners) {
-			l.onScroll(this);
+			l.onScroll(this, state);
 		}
 	}
 
@@ -1975,10 +1977,11 @@ public class FreeFlowContainer extends AbsLayoutContainer
 
 	public interface OnScrollListener {
 		public int SCROLL_STATE_IDLE = 0;
-		public int SCROLL_STATE_TOUCH_SCROLL = 1;
-		public int SCROLL_STATE_FLING = 2;
+		public int SCROLL_STATE_BEGIN_SCROLL = 1;
+		public int SCROLL_STATE_TOUCH_SCROLL = 2;
+		public int SCROLL_STATE_FLING = 3;
 
-		public void onScroll(FreeFlowContainer container);
+		public void onScroll(FreeFlowContainer container, int state);
 	}
 	
 	/******** SUPPORT KEYBOARD EVENT ********/
