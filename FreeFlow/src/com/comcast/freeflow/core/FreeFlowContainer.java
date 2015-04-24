@@ -889,16 +889,19 @@ public class FreeFlowContainer extends AbsLayoutContainer
      * 
      * @return
      */
-    protected boolean canScroll() {
+    protected boolean canScroll(boolean vertical) {
         boolean canScroll = false;
 
-        if (mLayout.horizontalScrollEnabled()
-                && this.mLayout.getContentWidth() > getWidth()) {
-            canScroll = true;
-        }
-        if (mLayout.verticalScrollEnabled()
-                && mLayout.getContentHeight() > getHeight()) {
-            canScroll = true;
+        if (!vertical) {
+            if (mLayout.horizontalScrollEnabled()
+                    && this.mLayout.getContentWidth() > getWidth()) {
+                canScroll = true;
+            }
+        } else {
+            if (mLayout.verticalScrollEnabled()
+                    && mLayout.getContentHeight() > getHeight()) {
+                canScroll = true;
+            }
         }
 
         return canScroll;
@@ -914,7 +917,7 @@ public class FreeFlowContainer extends AbsLayoutContainer
 
 		// flag to check if laid out items are wide or tall enough
 		// to require scrolling
-		boolean canScroll = canScroll();
+		boolean canScroll = (canScroll(true) | canScroll(false));
 
 		switch (event.getAction()) {
 		case (MotionEvent.ACTION_DOWN):
@@ -2053,7 +2056,9 @@ public class FreeFlowContainer extends AbsLayoutContainer
      * @return Return true if the event was handled, else false.
      */
     public boolean executeKeyEvent(KeyEvent event) {
-        if (!canScroll() || mLayout == null) {
+        if (!canScroll(event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP
+                        || event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN)
+                || mLayout == null) {
             return false;
         }
 
