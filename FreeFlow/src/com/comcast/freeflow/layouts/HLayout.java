@@ -185,18 +185,25 @@ public class HLayout extends FreeFlowLayoutBase implements FreeFlowLayout {
 
             if (direction == View.FOCUS_LEFT) {
                 idx -= 1;
-                Section s = itemsAdapter.getSection(sec - 1);
-                if (idx < 0 && s != null) {
-                    sec -= 1;
-                    idx = s.getDataCount() - 1;
+                if (idx < 0) {
+                    Section s = itemsAdapter.getSection(sec - 1);
+                    if (s != null) {
+                        sec -= 1;
+                        idx = s.getDataCount() - 1;
+                    } else {
+                        return null;
+                    }
                 }
             } else if (direction == View.FOCUS_RIGHT) {
                 Section s = itemsAdapter.getSection(sec);
                 idx += 1;
-                if (idx >= s.getDataCount()
-                        && itemsAdapter.getSection(sec + 1) != null) {
-                    sec += 1;
-                    idx = 0;
+                if (idx >= s.getDataCount()) {
+                    if (itemsAdapter.getSection(sec + 1) != null) {
+                        sec += 1;
+                        idx = 0;
+                    } else {
+                        return null;
+                    }
                 }
             }
         }
