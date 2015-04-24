@@ -118,7 +118,7 @@ public class ArtbookActivity extends Activity implements OnClickListener{
 		container.addScrollListener( new OnScrollListener() {
 			 
 			@Override
-			public void onScroll(FreeFlowContainer container) {
+			public void onScroll(FreeFlowContainer container, int state) {
 				Log.d(TAG, "scroll percent "+ container.getScrollPercentY() );
 			}
 		});
